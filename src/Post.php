@@ -2,18 +2,15 @@
 
 namespace Canvas;
 
+use App\User;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Str;
-use Illuminate\Foundation\Auth\User;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Jenssegers\Mongodb\Eloquent\Builder;
+use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
+use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 
-class Post extends Model
+class Post extends Eloquent
 {
     use SoftDeletes;
 
@@ -80,9 +77,8 @@ class Post extends Model
     /**
      * Get the tags relationship.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function tags(): BelongsToMany
+    public function tags()
     {
         return $this->belongsToMany(Tag::class, 'canvas_posts_tags', 'post_id', 'tag_id');
     }
@@ -90,9 +86,8 @@ class Post extends Model
     /**
      * Get the topics relationship.
      *
-     * @return belongsToMany
      */
-    public function topic(): belongsToMany
+    public function topic()
     {
         return $this->belongsToMany(Topic::class, 'canvas_posts_topics', 'post_id', 'topic_id');
     }
@@ -102,7 +97,7 @@ class Post extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function user(): BelongsTo
+    public function user()
     {
         return $this->belongsTo(User::class);
     }
@@ -110,9 +105,8 @@ class Post extends Model
     /**
      * Get the views relationship.
      *
-     * @return HasMany
      */
-    public function views(): HasMany
+    public function views()
     {
         return $this->hasMany(View::class);
     }

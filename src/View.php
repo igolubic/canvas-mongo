@@ -3,11 +3,9 @@
 namespace Canvas;
 
 use Carbon\CarbonPeriod;
-use Illuminate\Support\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
 
-class View extends Model
+class View extends Eloquent
 {
     /**
      * The attributes that aren't mass assignable.
@@ -26,9 +24,8 @@ class View extends Model
     /**
      * Get the post relationship.
      *
-     * @return BelongsTo
      */
-    public function post(): BelongsTo
+    public function post()
     {
         return $this->belongsTo(Post::class);
     }
@@ -36,11 +33,10 @@ class View extends Model
     /**
      * Return a view count for the last [X] days.
      *
-     * @param Collection $views
      * @param int $days
      * @return array
      */
-    public static function viewTrend(Collection $views, int $days): array
+    public static function viewTrend($views, int $days): array
     {
         // Filter the view data to only include created_at date strings
         $collection = collect();

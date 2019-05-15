@@ -2,11 +2,10 @@
 
 namespace Canvas;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
+use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 
-class Topic extends Model
+class Topic extends Eloquent
 {
     use SoftDeletes;
 
@@ -48,11 +47,10 @@ class Topic extends Model
     /**
      * Get the posts relationship.
      *
-     * @return HasManyThrough
      */
-    public function posts(): HasManyThrough
+    public function posts()
     {
-        return $this->HasManyThrough(
+        return $this->hasMany(
             Post::class,
             PostsTopics::class,
             'topic_id', // Foreign key on canvas_posts_topics table...

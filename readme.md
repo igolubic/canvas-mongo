@@ -2,6 +2,10 @@
 
 Canvas with mongoDB by [MVT Solutions](https://www.mvt-solutions.com) 
 
+## TODO
+- Load and show posts with tag [ ]
+- Load and show posts in topic [ ]
+
 ## License
 
 Canvas is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).

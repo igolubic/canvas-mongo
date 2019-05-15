@@ -23,10 +23,9 @@ class StatsController extends Controller
     public function index()
     {
         // Get all of the posts
-        $posts = Post::published()
-            ->orderByDesc('created_at')
+        $posts = Post::where('published_at', '<=', now())
+            ->orderBy('created_at', 'desc')
             ->select('id', 'title', 'body', 'published_at', 'created_at')
-            ->withCount('views')
             ->get();
 
         // Filter out posts that are not published
@@ -38,16 +37,15 @@ class StatsController extends Controller
         $postList->each->append('read_time');
 
         // Get views for the last [X] days
-        $views = View::whereBetween('created_at', [
-            now()->subDays(self::DAYS_PRIOR)->toDateTimeString(),
-            now()->toDateTimeString(),
-        ])->select('created_at')->get();
+        $views = View::where('created_at', '>=', now()->subDays(self::DAYS_PRIOR))
+            ->where('created_at', '<=', now())
+            ->select('created_at')->get();
 
         $data = [
             'posts' => [
-                'all'             => $posts,
-                'published_count' => $posts->where('published_at', '<=', now()->toDateTimeString())->count(),
-                'drafts_count'    => $posts->where('published_at', '>', now()->toDateTimeString())->count(),
+                'all' => $posts,
+                'published_count' => $posts->where('published_at', '<=', now())->count(),
+                'drafts_count' => $posts->where('published_at', '>', now())->count(),
             ],
             'views' => [
                 'count' => $views->count(),
@@ -70,10 +68,10 @@ class StatsController extends Controller
 
         if ($post->published) {
             $data = [
-                'post'                  => $post,
-                'traffic'               => $post->top_referers,
+                'post' => $post,
+                'traffic' => $post->top_referers,
                 'popular_reading_times' => $post->popular_reading_times,
-                'views'                 => json_encode($post->view_trend),
+                'views' => json_encode($post->view_trend),
             ];
 
             return view('canvas::stats.show', compact('data'));

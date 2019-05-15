@@ -20,7 +20,7 @@ class PostController extends Controller
     public function index()
     {
         $data = [
-            'posts' => Post::orderByDesc('created_at')->get(),
+            'posts' => Post::all(),
         ];
 
         return view('canvas::posts.index', compact('data'));

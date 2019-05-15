@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Canvas\Tag;
+use Canvas\Events\PostViewed;
 use Canvas\Post;
+use Canvas\Tag;
 use Canvas\Topic;
 use Illuminate\View\View;
-use Canvas\Events\PostViewed;
 
 class BlogController extends Controller
 {
@@ -18,9 +18,9 @@ class BlogController extends Controller
     public function index(): View
     {
         $data = [
-            'posts'  => Post::published()->orderByDesc('published_at')->simplePaginate(10),
+            'posts' => Post::where('published_at', '<=', now())->orderBy('published_at', 'desc')->simplePaginate(10),
             'topics' => Topic::all(['name', 'slug']),
-            'tags'   => Tag::all(['name', 'slug']),
+            'tags' => Tag::all(['name', 'slug']),
         ];
 
         return view('blog.index', compact('data'));
@@ -34,7 +34,7 @@ class BlogController extends Controller
      */
     public function post(string $slug): View
     {
-        $posts = Post::with('tags', 'topic')->published()->get();
+        $posts = Post::with('tags', 'topic')->where('published_at', '<=', now())->get();
         $post = $posts->firstWhere('slug', $slug);
 
         if (optional($post)->published) {
@@ -66,11 +66,11 @@ class BlogController extends Controller
 
             $data = [
                 'author' => $post->author,
-                'post'   => $post,
-                'meta'   => $post->meta,
-                'next'   => $next,
+                'post' => $post,
+                'meta' => $post->meta,
+                'next' => $next,
                 'random' => $random,
-                'topic'  => $post->topic->first() ?? null,
+                'topic' => $post->topic->first() ?? null,
             ];
 
             event(new PostViewed($post));
@@ -83,7 +83,7 @@ class BlogController extends Controller
 
     /**
      * Show all posts with a given tag.
-     *
+     * TODO - Implement loading posts with tag
      * @param string $slug
      * @return View
      */
@@ -93,10 +93,10 @@ class BlogController extends Controller
 
         if ($tag) {
             $data = [
-                'tag'    => $tag,
-                'tags'   => Tag::all(['name', 'slug']),
+                'tag' => $tag,
+                'tags' => Tag::all(['name', 'slug']),
                 'topics' => Topic::all(['name', 'slug']),
-                'posts'  => Post::whereHas('tags', function ($query) use ($slug) {
+                'posts' => Post::whereHas('tags', function ($query) use ($slug) {
                     $query->where('slug', $slug);
                 })->published()->orderByDesc('published_at')->simplePaginate(10),
             ];
@@ -109,7 +109,7 @@ class BlogController extends Controller
 
     /**
      * Show all posts under a given topic.
-     *
+     * TODO - Implement loading posts wiht topic
      * @param string $slug
      * @return View
      */
@@ -119,10 +119,10 @@ class BlogController extends Controller
 
         if ($topic) {
             $data = [
-                'tags'   => Tag::all(['name', 'slug']),
+                'tags' => Tag::all(['name', 'slug']),
                 'topics' => Topic::all(['name', 'slug']),
-                'topic'  => $topic,
-                'posts'  => Post::whereHas('topic', function ($query) use ($slug) {
+                'topic' => $topic,
+                'posts' => Post::whereHas('topic', function ($query) use ($slug) {
                     $query->where('slug', $slug);
                 })->published()->orderByDesc('published_at')->simplePaginate(10),
             ];

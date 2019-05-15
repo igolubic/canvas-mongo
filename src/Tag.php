@@ -2,11 +2,10 @@
 
 namespace Canvas;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
+use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 
-class Tag extends Model
+class Tag extends Eloquent
 {
     use SoftDeletes;
 
@@ -48,9 +47,8 @@ class Tag extends Model
     /**
      * The posts that have the tag.
      *
-     * @return BelongsToMany
      */
-    public function posts(): BelongsToMany
+    public function posts()
     {
         return $this->belongsToMany(Post::class, 'canvas_posts_tags', 'tag_id', 'post_id');
     }
